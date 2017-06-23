@@ -109,14 +109,13 @@ function [pHEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     % the pH estimate.  This adjustment is density dependent only and will
     % therefore be regionally too large or too small. See the paper for
     % details.  If this boolean is set to true, then an estimate date or
-    % dates must also be provided as EstDates.  This input or OAAdjustTF
-    % must be supplied.
+    % dates must also be provided as EstDates.
     %   
 % EstDates (Semi-optional n by 1 array or 1 by 1 value, no default, but
 % required if OAAdjustTF is true): 
     % A vector of decimal dates for the estimates (e.g. July 1 2020 would
     % be "2020.5").  If only a single date is supplied that value is used
-    % for all estimates.  This input or OAAdjustTF must be supplied.
+    % for all estimates.  This input or OAAju
     % 
 % MeasUncerts (Optional n by y array or 1 by y vector, default: [0.003 S,
 % 0.003 degrees C (T or theta), 1% N, 1% AOU or O2, 1% Si]: 
@@ -145,13 +144,14 @@ function [pHEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     % instead of measured with purified m-cresol dye. This is arguably also
     % a better estimate of the pH that would be obtained from pre-2011
     % measurements with impure dyes.  See the LIPHR paper for details.
-%    
+    
 % VerboseTF (Optional boolean, default true): 
     % Setting this to false will make LIPHR stop printing updates to the
     % command line.  This behavior can also be permanently disabled below.
 % *************************************************************************
 % Outputs:
-%   
+%  
+% 
 % pHEstimates: 
     % A n by e array of LIPHR estimates specific to the coordinates and
     % parameter measurements provided.  Units are pH_total units.
@@ -272,7 +272,7 @@ else
     pHCalcTF=false;
 end
 
-% Checking for EstDates input and setting default if not given
+% Checking for OAAdjustTF input and setting default if not given
 a=strcmpi(varargin,'EstDates');
 if any(a)
     EstDates=varargin{1,boolean([0 a(1:end-1)])};

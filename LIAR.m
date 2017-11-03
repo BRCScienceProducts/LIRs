@@ -3,7 +3,8 @@ function [AlkalinityEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
             varargin)                                     % Optional inputs
 %  Version 2.0 
 %  Updated 2017.10.12: 
-%       -"Molality" changed to "PerKgSw,"   
+%       -"Molality" changed to "PerKgSw,"
+%       -Changed to 2-d uncertainty interpolation vs. depth and salinity
 %
 %  Locally Interpolated Alkalinity Regression (LIAR): Estimates alkalinity
 %  and alkalinity estimate uncertainty from combinations of other parameter
@@ -466,8 +467,8 @@ for Eq=1:e;
         LCs(~AAIndsM,Var)=InterpolantElse(C(~AAIndsM,1), ...
             C(~AAIndsM,2),C(~AAIndsM,3));
     end
-    % Estimating methodological error from salinity
-    EMLR=interp1(L.EMLRrec(:,1),L.EMLRrec(:,1+Equation),M(:,1));
+    % Estimating methodological error from depth and salinity
+    EMLR=interp2(L.EMLRrec(:,:,2),L.EMLRrec(:,:,1),L.EMLRrec(:,:,2+Equation),C(:,3),M(:,1));
     %  Estimating alkalinity and alkalinity estimate uncertainty from LCs.
     AlkalinityEst(:,Eq)=real(sum(LCs.*horzcat(ones(n,1),M(:,UseVars)),2));
     % Estimating uncertainty

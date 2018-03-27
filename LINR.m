@@ -91,7 +91,7 @@ function [NitrateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     % 5.  S, Theta or T, P, AOU or O2
     % 6.  S, Theta or T, P
     % 7.  S, Theta or T, AOU or O2
-    % 8.  S, Theta
+    % 8.  S, Theta or T
     % 9.  S, P, AOU or O2, Si
     % 10. S, P, Si
     % 11. S, AOU or O2, Si

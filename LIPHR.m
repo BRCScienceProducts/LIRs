@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 function [pHEstimates,UncertaintyEstimates,MinUncertaintyEquation, ...
     EstimateCsDate]= ...
     LIPHR(Coordinates,Measurements,MeasIDVec, ...         % Required inputs
@@ -1274,4 +1273,3 @@ if VerboseTF==true;
     disp(horzcat('LIPHR finished after ',num2str(round(toc,0)),' seconds.')); 
 end
 end
->>>>>>> origin/master

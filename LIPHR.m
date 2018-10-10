@@ -2,7 +2,7 @@ function [pHEstimates,UncertaintyEstimates,MinUncertaintyEquation, ...
     EstimateCsDate]= ...
     LIPHR(Coordinates,Measurements,MeasIDVec, ...         % Required inputs
             varargin)                                     % Optional inputs
-% Version 2.0.1
+% Version 2.0.2 
 % *************************************************************************
 % Version 2.0 version at manuscript submission
 % Version 2.0.1 (2017.10.17) version at manuscript acceptance
@@ -10,6 +10,10 @@ function [pHEstimates,UncertaintyEstimates,MinUncertaintyEquation, ...
 %       -retrained with updated cruise flags
 %       -retrained with linear adjustments, and changed pHCalcTF to match
 %       -enabled user-defined OARates
+% Version 2.0.2 (2018.10.10) Fixed a bug in the training routines.
+%        New errors should be closer to estimated errors in the 2nd
+%        citation. Older errors were averaged 0.002 higher than estimated.
+%        See Readme for details.
 % *************************************************************************
 %  Locally Interpolated pH Regression (LIPHR): Estimates pH
 %  and pH estimate uncertainty from combinations of other parameter
@@ -17,7 +21,8 @@ function [pHEstimates,UncertaintyEstimates,MinUncertaintyEquation, ...
 %
 %  Citations:
 %  LIARv1: Carter et al., 2016, doi: 10.1002/lom3.10087
-%  LIARv2, LIPHR, LINR citation: Carter et al. (submitted 2017)
+%  LIARv2, LIPHR, LINR citation: Carter et al. 2018, 
+%         https://doi.org/10.1002/lom3.10232
 %
 %  This function needs the CSIRO seawater package to run if measurements
 %  are povided in molar units or if potential temperature or AOU are

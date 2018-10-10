@@ -1,9 +1,13 @@
 function [NitrateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     LINR(Coordinates,Measurements,MeasIDVec, ...          % Required inputs
             varargin)                                     % Optional inputs
-%  Version 2.0 (first LINR version, released alongside LIARv2.0)
+%  Version 2.0.1 (first LINR version, released alongside LIARv2.0)
 %  Updated 2017.10.12: 
 %       -"Molality" changed to "PerKgSw," 
+%  Updated LINR_files 2018.10.10: Fixed a bug in the training routines.
+%        New errors should be closer to estimated errors in the 2nd
+%        citation. Older errors were averaged 0.01 umol/kg higher than
+%        estimated. See Readme for details.
 %
 %  Locally Interpolated nitrate Regression (LINR): Estimates nitrate
 %  and nitrate estimate uncertainty from combinations of other parameter
@@ -11,7 +15,8 @@ function [NitrateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
 %
 %  Citations:
 %  LIARv1: Carter et al., 2016, doi: 10.1002/lom3.10087
-%  LIARv2, LIPHR, LINR citation: Carter et al. (submitted 2017)
+%  LIARv2, LIPHR, LINR citation: Carter et al. 2018, 
+%         https://doi.org/10.1002/lom3.10232
 %
 %  This function needs the CSIRO seawater package to run if measurements
 %  are povided in molar units or if potential temperature or AOU are

@@ -1,14 +1,23 @@
-function [PhosphateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
-    LIPRv2x(Coordinates,Measurements,MeasIDVec, ...                        % Required inputs
-            varargin)                                                      % Optional inputs
-%  Locally Interpolated Phosphate Regression (LIPR): Estimates phosphate
-%  and phosphate estimate uncertainty from combinations of other parameter
+function [SilicateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
+    LISIR(Coordinates,Measurements,MeasIDVec, ...         % Required inputs
+            varargin)                                     % Optional inputs
+%  Version 0.0 (not yet released)
+%  In development 2018:  
+%  Updated LISIR_files 2018.10.10: Fixed a bug in the training routines.
+%
+%  Locally Interpolated Silicate Regression (LISIR): Estimates silicate
+%  and silicate estimate uncertainty from combinations of other parameter
 %  measurements.
+%
+%  Citations:
+%  LIARv1: Carter et al., 2016, doi: 10.1002/lom3.10087
+%  LIARv2, LIPHR, LINR citation: Carter et al. (2017), doi: 10.1002/lom3.10232
+%  LIOR, LISiR, LIPR, TBD
 %
 %  This function needs the CSIRO seawater package to run if measurements
 %  are povided in molar units or if potential temperature or AOU are
 %  needed but not provided by the user.  Scale differences from TEOS-10 are
-%  a negligible component of phosphate estimate error.  The seawater
+%  a negligible component of silicate estimate error.  The seawater
 %  package is distributed freely by CSIRO (website has citation info):
 % 
 %  http://www.cmar.csiro.au/datacentre/ext_docs/seawater.htm
@@ -29,7 +38,7 @@ function [PhosphateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     % (degrees N), and the third column should be depth (m).
 % 
 % Measurements (required n by y array): 
-    % Parameter measurements that will be used to estimate phosphate.  The
+    % Parameter measurements that will be used to estimate silicate.  The
     % column order (y columns) is arbitrary, but specified by MeasIDVec.
     % Concentrations (including AOU) should be expressed as micromol per kg
     % unless MolalityTF is set to false in which case they should be
@@ -52,7 +61,7 @@ function [PhosphateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     % 2. Potential temperature 
     % 3. Phosphate
     % 4. AOU
-    % 5. Silicate
+    % 5. Nitrate
     % 6. O2 (recommended over AOU if temperature is included so the user
     %        can be confident AOU will be calculated the same way it was
     %        calculated for the training dataset)
@@ -64,14 +73,14 @@ function [PhosphateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
 % etc...")
 %
 % Equations (optional 1 by e vector, default []): 
-    % Vector indicating which equations will be used to estimate phosphate.
+    % Vector indicating which equations will be used to estimate silicate.
     % This input also determines the order of the columns in the
-    % 'PhosphateEstimates' output. If [] is input or the input is not
+    % 'SilicateEstimates' output. If [] is input or the input is not
     % specified then all 16 equations will be used and only the outputs
     % from the equation with the lowest uncertainty estimate will be
     % returned.
     % 
-    % (S=salinity, Theta=potential temperature, P=phosphate, Si=silicate,
+    % (S=salinity, Theta=potential temperature, P=phosphate, N=nitrate,
     % AOU=apparent oxygen utilization, T=temperature, O2=dissolved oxygen
     % molecule... see 'Measurements' for units).
     % 
@@ -97,9 +106,9 @@ function [PhosphateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
 % 0.003 degrees C (T or theta), 1% P, 1% AOU or O2, 1% Si]: 
     % Array of measurement uncertainties (see 'Measurements' for units).
     % Uncertainties should be presented in order indicated by MeasIDVec.
-    % Providing these estimates will improve LIPR estimate uncertainties
+    % Providing these estimates will improve LISIR estimate uncertainties
     % in 'UncertaintyEstimates'. Measurement uncertainties are a small part
-    % of LIPR estimate uncertainties for WOCE-quality measurements.
+    % of LISIR estimate uncertainties for WOCE-quality measurements.
     % However, estimate uncertainty scales with measurement uncertainty, so
     % it is recommended that measurement uncertainties be specified for
     % sensor measurements.  If this optional input argument is not
@@ -115,17 +124,17 @@ function [PhosphateEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     % regardless.
     % 
 % VerboseTF (Optional boolean, default true): 
-    % Setting this to false will make LIPR stop printing updates to the
+    % Setting this to false will make LISIR stop printing updates to the
     % command line.  This behavior can also be permanently disabled below.
 % *************************************************************************
 % Outputs:
 % 
-% PhosphateEstimates: 
-    % A n by e array of LIPR estimates specific to the coordinates and
+% SilicateEstimates: 
+    % A n by e array of LISIR estimates specific to the coordinates and
     % parameter measurements provided.  Units are micromoles per kg.
 	%
 % UncertaintyEstimates: 
-    % A n by e array of LIPR uncertainty estimates specific to the
+    % A n by e array of LISIR uncertainty estimates specific to the
     % coordinates, parameter measurements, and parameter uncertainties
     % provided.
     % 
@@ -162,7 +171,7 @@ end
 tic
 
 % Verifying required inputs are provided
-if nargin<3; error('LIPR called with too few input arguments.'); end
+if nargin<3; error('LISIR called with too few input arguments.'); end
 
 % Checking whether specific equations are specified.
 a=strcmpi(varargin,'Equations');
@@ -229,9 +238,9 @@ end
 
 % Making sure you downloaded the needed file and put it somewhere it
 % can be found
-if exist('LIPR_files.mat','file')<2; error('LIPR could not find the LIPR_files file needed to run.  This mandatory file should be distributed from the same website as LIPR.  Contact the corresponding author if you cannot find it there.  If you do have it then make sure it is on the MATLAB path or in the active directory.'); end
+if exist('LISIR_files.mat','file')<2; error('LISIR could not find the LISIR_files file needed to run.  This mandatory file should be distributed from the same website as LISIR.  Contact the corresponding author if you cannot find it there.  If you do have it then make sure it is on the MATLAB path or in the active directory.'); end
  
-% LIPR requires non-NaN coordinates to provide an estimate.  This step
+% LISIR requires non-NaN coordinates to provide an estimate.  This step
 % eliminates NaN coordinate combinations prior to estimation.  NaN
 % estimates will be returned for these coordinates.
 NaNCoords=max(isnan(Coordinates),[],2);
@@ -242,7 +251,7 @@ e=size(Equations,2);
 % Checking for common missing data indicator flags and warning if any are
 % found.  Consider adding your common ones here
 if max(ismember([-999 -9 -1*10^20],Measurements))==1
-    warning('LIPR: A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with NaNs.  Otherwise, LIPR will interpret your inputs at face value and give terrible estimates.')
+    warning('LISIR: A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with NaNs.  Otherwise, LISIR will interpret your inputs at face value and give terrible estimates.')
 end
 
 % Checking to make sure all required parameters are provided
@@ -293,7 +302,7 @@ end
 
 % Making sure all needed variables are present
 if ~all(HaveVars(1,NeedVars))
-    error('LIPR error: Check "Equations" and "MeasIDVec" inputs.  One or more regression equations selected require one or more input parameters that are either not provided or not labeled correctly.')
+    error('LISIR error: Check "Equations" and "MeasIDVec" inputs.  One or more regression equations selected require one or more input parameters that are either not provided or not labeled correctly.')
 end
 
 
@@ -330,7 +339,7 @@ end
 % *************************************************************************
 % Beginning treatment of inputs and calculations
 
-L=load('LIPR_files.mat');
+L=load('LISIR_files.mat');
 % Adjusting negative longitudes.
 C(C(:,1)>360,1)=rem(C(C(:,1)>360,1),360);
 C(C(:,1)<0,1)=rem(C(C(:,1)<0,1,1),360)+360;
@@ -368,7 +377,7 @@ Dummy=horzcat(Dummyset,Dummy);
 % Disambiguation:
 % L.Cs (loaded from file)... pre-determined regression constants
 % L.Coords (loaded from file)... coordinates of L.Cs
-% C... viable subset of user-provided coordinates for LIPR estimates
+% C... viable subset of user-provided coordinates for LISIR estimates
 % LCs... locally-interpolated L.Cs
 InterpolantAA=scatteredInterpolant(vertcat(L.Coords(L.AAIndsCs,1), ...
     Dummyset(:,1)),vertcat(L.Coords(L.AAIndsCs,2),Dummyset(:,2)), ...
@@ -381,17 +390,17 @@ InterpolantElse=scatteredInterpolant(vertcat(L.Coords(~L.AAIndsCs,1), ...
 
 %Preallocating for speed
 if MinUncEst==true && SpecifiedEqn==false;
-    PhosphateEstimates=NaN(NumCoords,1);
+    SilicateEstimates=NaN(NumCoords,1);
     UncertaintyEstimates=NaN(NumCoords,1);
 else
-    PhosphateEstimates=NaN(NumCoords,e);
+    SilicateEstimates=NaN(NumCoords,e);
     UncertaintyEstimates=NaN(NumCoords,e);
 end
-PhosphateEst=NaN(n,e);
+SilicateEst=NaN(n,e);
 UncertEst=NaN(n,e);
 
 % Disambiguation:
-% Eq... a counter for which equation LIPR is on
+% Eq... a counter for which equation LISIR is on
 % e... the number of equations that will be used
 % Equation... the specific equation number currently being used
 % Equations... the user provided list of equations that will be used.
@@ -400,33 +409,33 @@ for Eq=1:e;
     clear LCs    
 %     selecting variables for this regression
     if Equation==1
-        VarList='S Theta N AOU Si';
+        VarList='S Theta P AOU N';
     elseif Equation==2
-        VarList='S Theta N Si';
+        VarList='S Theta P N';
     elseif Equation==3
-        VarList='S Theta AOU Si';
+        VarList='S Theta AOU N';
     elseif Equation==4
-        VarList='S Theta Si';
-    elseif Equation==5
-        VarList='S Theta N AOU';
-    elseif Equation==6
         VarList='S Theta N';
+    elseif Equation==5
+        VarList='S Theta P AOU';
+    elseif Equation==6
+        VarList='S Theta P';
     elseif Equation==7
         VarList='S Theta AOU';
     elseif Equation==8
         VarList='S Theta';
     elseif Equation==9
-        VarList='S N AOU Si';
+        VarList='S P AOU N';
     elseif Equation==10
-        VarList='S N Si';
+        VarList='S P N';
     elseif Equation==11
-        VarList='S AOU Si';
+        VarList='S AOU N';
     elseif Equation==12
-        VarList='S Si';
-    elseif Equation==13
-        VarList='S N AOU';
-    elseif Equation==14
         VarList='S N';
+    elseif Equation==13
+        VarList='S P AOU';
+    elseif Equation==14
+        VarList='S P';
     elseif Equation==15
         VarList='S AOU';
     elseif Equation==16
@@ -461,29 +470,29 @@ for Eq=1:e;
     end
     % Estimating methodological error from depth
     EMLR=interp1(L.EMLRrec(:,1),L.EMLRrec(:,1+Equation),C(:,3));
-    %  Estimating phosphate and phosphate estimate uncertainty from LCs.
-    PhosphateEst(:,Eq)=real(sum(LCs.*horzcat(ones(n,1),M(:,UseVars)),2));
+    %  Estimating silicate and silicate estimate uncertainty from LCs.
+    SilicateEst(:,Eq)=real(sum(LCs.*horzcat(ones(n,1),M(:,UseVars)),2));
     % Estimating uncertainty
     UncertEst(:,Eq)=real((sum((LCs.*horzcat(zeros(n,1), ...
-        U(:,UseVars))).^2,2)+0.03^2+EMLR.^2).^(1/2));
+        U(:,UseVars))).^2,2)+0.3^2+EMLR.^2).^(1/2));
 end
-% Setting negative LIPR values to 0
-PhosphateEst(PhosphateEst<0)=0;
+% Setting negative LISIR values to 0
+SilicateEst(SilicateEst<0)=0;
 % Determines which regression has the lowest uncertainty estimate.  If
 % no regression was specified for outputs, this lowest-uncertainty
-% phosphate and uncertainty estimate is returned.
+% silicate and uncertainty estimate is returned.
 [Temp,MinUncertaintyEquation]=min(UncertEst,[],2);
 if MinUncEst==true && SpecifiedEqn==false;
     if VerboseTF==true;
         disp('Picking the outputs with the lowest uncertainties.')
     end
-    PhosphateEst=PhosphateEst(sub2ind(size(PhosphateEst),[1:1:size(MinUncertaintyEquation,1)]',MinUncertaintyEquation));
+    SilicateEst=SilicateEst(sub2ind(size(SilicateEst),[1:1:size(MinUncertaintyEquation,1)]',MinUncertaintyEquation));
     UncertEst=UncertEst(sub2ind(size(UncertEst),[1:1:size(MinUncertaintyEquation,1)]',MinUncertaintyEquation));
 end
 % Filling the outputs with the estimates at viable locations.
-PhosphateEstimates(~NaNCoords,:)=PhosphateEst;
+SilicateEstimates(~NaNCoords,:)=SilicateEst;
 UncertaintyEstimates(~NaNCoords,:)=UncertEst;
 if VerboseTF==true; 
-    disp(horzcat('LIPR finished after ',num2str(round(toc,0)),' seconds.')); 
+    disp(horzcat('LISIR finished after ',num2str(round(toc,0)),' seconds.')); 
 end
 end

@@ -3,11 +3,13 @@ function [OxygenEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
             varargin)                                     % Optional inputs
 %  Version 0.0 (not yet released)
 %  In development 2018:  
+%  Updated LIOR_files 2018.10.10: Fixed a bug in the training routines.
 %
 %  Development to do list: 
 %  1. assess against available data
-%  2. retrain without hypoxic measurements, then rely on max(ans,0) to
-%  capture O2 min zones without biasing regressions... retest.
+%  2. (2018.10.10 this is now done, no obvious impact on performance)
+%  retrain without hypoxic measurements, then rely on max(ans,0) to capture
+%  O2 min zones without biasing regressions... retest.
 %
 %  Locally Interpolated Oxygen Regression (LIOR): Estimates oxygen
 %  and oxygen estimate uncertainty from combinations of other parameter
@@ -16,7 +18,7 @@ function [OxygenEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
 %  Citations:
 %  LIARv1: Carter et al., 2016, doi: 10.1002/lom3.10087
 %  LIARv2, LIPHR, LINR citation: Carter et al. (2017), doi: 10.1002/lom3.10232
-%  LIORv2, LISiR, LIPR, TBD
+%  LIOR, LISiR, LIPR, TBD
 %
 %  This function needs the CSIRO seawater package to run if measurements
 %  are povided in molar units or if potential temperature is

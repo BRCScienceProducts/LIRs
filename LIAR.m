@@ -1,14 +1,10 @@
 function [AlkalinityEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
     LIAR(Coordinates,Measurements,MeasIDVec, ...          % Required inputs
             varargin)                                     % Optional inputs
-%  Version 2.0.1
+%  Version 2.0 
 %  Updated 2017.10.12: 
 %       -"Molality" changed to "PerKgSw,"
 %       -Changed to 2-d uncertainty interpolation vs. depth and salinity
-%  Updated LIARv2_files 2018.10.10: Fixed a bug in the training routines.
-%        New errors should be closer to estimated errors in the 2nd
-%        citation. Older errors were averaged 0.3 umol/kg higher than
-%        estimated. See Readme for details.
 %
 %  Locally Interpolated Alkalinity Regression (LIAR): Estimates alkalinity
 %  and alkalinity estimate uncertainty from combinations of other parameter
@@ -16,8 +12,7 @@ function [AlkalinityEstimates,UncertaintyEstimates,MinUncertaintyEquation]= ...
 %
 %  Citations:
 %  LIARv1: Carter et al., 2016, doi: 10.1002/lom3.10087
-%  LIARv2, LIPHR, LINR citation: Carter et al. 2018, 
-%         https://doi.org/10.1002/lom3.10232
+%  LIARv2, LIPHR, LINR citation: Carter et al. (submitted 2017)
 %
 %  This function needs the CSIRO seawater package to run if measurements
 %  are povided in molar units or if potential temperature or AOU are
